@@ -41,7 +41,10 @@ Plans:
   3. User can retrieve a single machine by its Defender device ID via `/api/machines/{id}`
   4. User can search machines by DNS name prefix and filter by any combination of healthStatus, riskScore, exposureLevel, osPlatform, onboardingStatus, lastSeen, machineTags, and lastIpAddress
   5. Attempting a non-GET method returns a clear error instead of silently proceeding
-**Plans**: TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md — Extend Lokka-Microsoft with Defender handler (constants, schema, handler branch, pagination)
 
 ### Phase 3: Pagination Hardening
 **Goal**: Large-tenant pagination is reliable under rate limits and EU data residency is enforced even when `@odata.nextLink` returns a global hostname
@@ -61,5 +64,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Auth Prerequisites | 1/1 | Complete | 2026-04-01 |
-| 2. Core Defender Integration | 0/? | Not started | - |
+| 2. Core Defender Integration | 0/1 | Not started | - |
 | 3. Pagination Hardening | 0/? | Not started | - |
