@@ -8,3 +8,7 @@ export const LokkaDefaultRedirectUri = "http://localhost:3000";
 export const getDefaultGraphApiVersion = (): "v1.0" | "beta" => {
   return process.env.USE_GRAPH_BETA !== 'false' ? "beta" : "v1.0";
 };
+
+// Microsoft Defender for Endpoint constants
+export const DEFENDER_EU_BASE_URL = "https://eu.api.security.microsoft.com";
+export const DEFENDER_SCOPE = "https://api.securitycenter.microsoft.com/.default";

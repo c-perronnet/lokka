@@ -6,7 +6,7 @@ import { Client, PageIterator, PageCollection } from "@microsoft/microsoft-graph
 import fetch from 'isomorphic-fetch'; // Required polyfill for Graph client
 import { logger } from "./logger.js";
 import { AuthManager, AuthConfig, AuthMode } from "./auth.js";
-import { LokkaClientId, LokkaDefaultTenantId, LokkaDefaultRedirectUri, getDefaultGraphApiVersion } from "./constants.js";
+import { LokkaClientId, LokkaDefaultTenantId, LokkaDefaultRedirectUri, getDefaultGraphApiVersion, DEFENDER_EU_BASE_URL, DEFENDER_SCOPE } from "./constants.js";
 
 // Set up global fetch for the Microsoft Graph client
 (global as any).fetch = fetch;
@@ -31,9 +31,17 @@ logger.info(`Graph API default version: ${defaultGraphApiVersion} (USE_GRAPH_BET
 
 server.tool(
   "Lokka-Microsoft",
-  "A versatile tool to interact with Microsoft APIs including Microsoft Graph (Entra) and Azure Resource Management. IMPORTANT: For Graph API GET requests using advanced query parameters ($filter, $count, $search, $orderby), you are ADVISED to set 'consistencyLevel: \"eventual\"'.",
+  "A versatile tool to interact with Microsoft APIs including Microsoft Graph (Entra), Azure Resource Management, and Microsoft Defender for Endpoint (read-only device queries). " +
+    "For Defender: use apiType 'defender', path '/api/machines' to list devices, '/api/machines/{id}' for a specific device. " +
+    "Supports OData $filter on healthStatus, riskScore, exposureLevel, osPlatform, onboardingStatus, lastSeen, machineTags, lastIpAddress, computerDnsName. " +
+    "Filter examples: healthStatus eq 'Active', riskScore eq 'High', lastSeen gt 2024-01-01T00:00:00Z, startswith(computerDnsName,'prefix'), machineTags/any(tag: tag eq 'value'). " +
+    "Combine filters with 'and'/'or'. Use $top/$skip for pagination or fetchAll:true for all pages. " +
+    "Defender only supports GET requests. " +
+    "IMPORTANT: For Graph API GET requests using advanced query parameters ($filter, $count, $search, $orderby), you are ADVISED to set 'consistencyLevel: \"eventual\"'.",
   {
-    apiType: z.enum(["graph", "azure"]).describe("Type of Microsoft API to query. Options: 'graph' for Microsoft Graph (Entra) or 'azure' for Azure Resource Management."),
+    apiType: z.enum(["graph", "azure", "defender"]).describe(
+      "Type of Microsoft API to query. Options: 'graph' for Microsoft Graph (Entra), 'azure' for Azure Resource Management, or 'defender' for Microsoft Defender for Endpoint (read-only device queries)."
+    ),
     path: z.string().describe("The Azure or Graph API URL path to call (e.g. '/users', '/groups', '/subscriptions')"),
     method: z.enum(["get", "post", "put", "patch", "delete"]).describe("HTTP method to use"),
     apiVersion: z.string().optional().describe("Azure Resource Management API version (required for apiType Azure)"),
@@ -56,7 +64,7 @@ server.tool(
     fetchAll,
     consistencyLevel
   }: {
-    apiType: "graph" | "azure";
+    apiType: "graph" | "azure" | "defender";
     path: string;
     method: "get" | "post" | "put" | "patch" | "delete";
     apiVersion?: string;
