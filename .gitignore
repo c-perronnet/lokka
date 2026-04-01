@@ -137,3 +137,6 @@ dist
 src/.DS_Store
 .DS_Store
 website/static/img/Thumbs.db
+
+# MCP server config (contains secrets)
+.mcp.json
