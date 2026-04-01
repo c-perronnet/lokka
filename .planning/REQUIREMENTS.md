@@ -81,33 +81,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INTG-01 | — | Pending |
-| INTG-02 | — | Pending |
-| INTG-03 | — | Pending |
-| INTG-04 | — | Pending |
-| INTG-05 | — | Pending |
-| DEVL-01 | — | Pending |
-| DEVL-02 | — | Pending |
-| DEVL-03 | — | Pending |
-| DEVK-01 | — | Pending |
-| DEVK-02 | — | Pending |
-| FILT-01 | — | Pending |
-| FILT-02 | — | Pending |
-| FILT-03 | — | Pending |
-| FILT-04 | — | Pending |
-| FILT-05 | — | Pending |
-| FILT-06 | — | Pending |
-| FILT-07 | — | Pending |
-| FILT-08 | — | Pending |
-| FILT-09 | — | Pending |
-| ERRH-01 | — | Pending |
-| ERRH-02 | — | Pending |
+| INTG-01 | Phase 2 | Pending |
+| INTG-02 | Phase 1 | Pending |
+| INTG-03 | Phase 1 | Pending |
+| INTG-04 | Phase 1 | Pending |
+| INTG-05 | Phase 2 | Pending |
+| DEVL-01 | Phase 2 | Pending |
+| DEVL-02 | Phase 2 | Pending |
+| DEVL-03 | Phase 2 | Pending |
+| DEVK-01 | Phase 2 | Pending |
+| DEVK-02 | Phase 2 | Pending |
+| FILT-01 | Phase 2 | Pending |
+| FILT-02 | Phase 2 | Pending |
+| FILT-03 | Phase 2 | Pending |
+| FILT-04 | Phase 2 | Pending |
+| FILT-05 | Phase 2 | Pending |
+| FILT-06 | Phase 2 | Pending |
+| FILT-07 | Phase 2 | Pending |
+| FILT-08 | Phase 2 | Pending |
+| FILT-09 | Phase 2 | Pending |
+| ERRH-01 | Phase 3 | Pending |
+| ERRH-02 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21 ⚠️
+- Mapped to phases: 21
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after initial definition*
+*Last updated: 2026-04-01 after roadmap creation*
