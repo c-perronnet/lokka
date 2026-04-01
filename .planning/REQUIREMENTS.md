@@ -10,9 +10,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Integration
 
 - [ ] **INTG-01**: User can query Defender for Endpoint API via the existing `Lokka-Microsoft` tool with `apiType: "defender"`
-- [ ] **INTG-02**: Defender requests use the EU endpoint (`eu.api.security.microsoft.com`) hardcoded
-- [ ] **INTG-03**: Defender requests reuse existing Lokka authentication (same credential chain as Graph/Azure RM)
-- [ ] **INTG-04**: Defender token uses correct scope (`https://api.securitycenter.microsoft.com/.default`)
+- [x] **INTG-02**: Defender requests use the EU endpoint (`eu.api.security.microsoft.com`) hardcoded
+- [x] **INTG-03**: Defender requests reuse existing Lokka authentication (same credential chain as Graph/Azure RM)
+- [x] **INTG-04**: Defender token uses correct scope (`https://api.securitycenter.microsoft.com/.default`)
 - [ ] **INTG-05**: Only GET (read-only) operations are supported; non-GET methods return a clear error
 
 ### Device Listing
@@ -82,9 +82,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INTG-01 | Phase 2 | Pending |
-| INTG-02 | Phase 1 | Pending |
-| INTG-03 | Phase 1 | Pending |
-| INTG-04 | Phase 1 | Pending |
+| INTG-02 | Phase 1 | Complete |
+| INTG-03 | Phase 1 | Complete |
+| INTG-04 | Phase 1 | Complete |
 | INTG-05 | Phase 2 | Pending |
 | DEVL-01 | Phase 2 | Pending |
 | DEVL-02 | Phase 2 | Pending |

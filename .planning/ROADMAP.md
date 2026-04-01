@@ -12,7 +12,7 @@ This milestone adds Microsoft Defender for Endpoint device querying to the exist
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Auth Prerequisites** - Verify token scope and app registration before any code is written
+- [x] **Phase 1: Auth Prerequisites** - Verify token scope and app registration before any code is written
 - [ ] **Phase 2: Core Defender Integration** - Extend Lokka-Microsoft tool with full Defender device query support
 - [ ] **Phase 3: Pagination Hardening** - Harden EU hostname normalization, 429 retry, and surface clear error messages
 
@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md — Verify Defender auth prerequisites (token scope, JWT claims, EU endpoint)
+- [x] 01-01-PLAN.md — Verify Defender auth prerequisites (token scope, JWT claims, EU endpoint)
 
 ### Phase 2: Core Defender Integration
 **Goal**: Users can query Defender device data through the existing `Lokka-Microsoft` MCP tool using `apiType: "defender"`
@@ -60,6 +60,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Auth Prerequisites | 0/1 | Planning complete | - |
+| 1. Auth Prerequisites | 1/1 | Complete | 2026-04-01 |
 | 2. Core Defender Integration | 0/? | Not started | - |
 | 3. Pagination Hardening | 0/? | Not started | - |
