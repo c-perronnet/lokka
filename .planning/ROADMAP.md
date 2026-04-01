@@ -26,7 +26,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. A token acquired with scope `https://api.securitycenter.microsoft.com/.default` returns HTTP 200 from `https://eu.api.security.microsoft.com/api/machines`
   2. Decoding the JWT confirms `aud` is `https://api.securitycenter.microsoft.com` (not `https://api.security.microsoft.com`)
   3. The Lokka app registration shows `Machine.Read.All` (or `Machine.ReadWrite.All`) under WindowsDefenderATP with admin consent granted
-**Plans**: TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md — Verify Defender auth prerequisites (token scope, JWT claims, EU endpoint)
 
 ### Phase 2: Core Defender Integration
 **Goal**: Users can query Defender device data through the existing `Lokka-Microsoft` MCP tool using `apiType: "defender"`
@@ -57,6 +60,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Auth Prerequisites | 0/? | Not started | - |
+| 1. Auth Prerequisites | 0/1 | Planning complete | - |
 | 2. Core Defender Integration | 0/? | Not started | - |
 | 3. Pagination Hardening | 0/? | Not started | - |
