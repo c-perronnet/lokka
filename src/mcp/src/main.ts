@@ -159,7 +159,7 @@ server.tool(
             throw new Error(`Unsupported method: ${method}`);
         }
       }      // --- Azure Resource Management Logic (using direct fetch) ---
-      else { // apiType === 'azure'
+      else if (apiType === 'azure') {
         if (!authManager) {
           throw new Error("Auth manager not initialized");
         }
@@ -262,6 +262,105 @@ server.tool(
           }
         }
       }
+      // --- Microsoft Defender for Endpoint Logic ---
+      else if (apiType === 'defender') {
+        // Read-only guard — block before any network call
+        if (method !== 'get') {
+          throw new Error(
+            "Defender for Endpoint integration is read-only. " +
+            "Only GET requests are supported. " +
+            `Received method: ${method.toUpperCase()}`
+          );
+        }
+
+        if (!authManager) {
+          throw new Error("Auth manager not initialized");
+        }
+        const azureCredential = authManager.getAzureCredential();
+        const tokenResponse = await azureCredential.getToken(DEFENDER_SCOPE);
+        if (!tokenResponse?.token) {
+          throw new Error(
+            "Failed to acquire Defender access token. " +
+            "Verify the app registration has WindowsDefenderATP permissions with admin consent."
+          );
+        }
+        determinedUrl = DEFENDER_EU_BASE_URL;
+
+        let url = `${DEFENDER_EU_BASE_URL}${path}`;
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          const urlParams = new URLSearchParams(queryParams);
+          url += `?${urlParams.toString()}`;
+        }
+
+        const defenderHeaders: Record<string, string> = {
+          'Authorization': `Bearer ${tokenResponse.token}`,
+          'Content-Type': 'application/json'
+        };
+
+        if (fetchAll) {
+          logger.info(`Fetching all Defender pages starting from: ${url}`);
+          let allValues: any[] = [];
+          let currentUrl: string | null = url;
+
+          while (currentUrl) {
+            logger.info(`Fetching Defender page: ${currentUrl}`);
+            // Re-acquire token for each page (tokens may expire during large fetches)
+            const pageCredential = authManager.getAzureCredential();
+            const pageToken = await pageCredential.getToken(DEFENDER_SCOPE);
+            if (!pageToken?.token) {
+              throw new Error("Token acquisition failed during Defender pagination");
+            }
+
+            const pageResponse = await fetch(currentUrl, {
+              method: 'GET',
+              headers: {
+                ...defenderHeaders,
+                'Authorization': `Bearer ${pageToken.token}`
+              }
+            });
+
+            if (!pageResponse.ok) {
+              const errorBody = await pageResponse.text();
+              throw new Error(
+                `Defender API error (${pageResponse.status}) during pagination on ${currentUrl}: ${errorBody}`
+              );
+            }
+
+            const pageData = await pageResponse.json();
+
+            if (pageData.value && Array.isArray(pageData.value)) {
+              allValues = allValues.concat(pageData.value);
+            }
+
+            // CRITICAL: Defender uses @odata.nextLink (NOT bare nextLink like Azure RM)
+            currentUrl = pageData['@odata.nextLink'] || null;
+          }
+
+          responseData = { value: allValues };
+          logger.info(`Finished fetching all Defender pages. Total items: ${allValues.length}`);
+        } else {
+          logger.info(`Fetching single Defender page: ${url}`);
+          const apiResponse = await fetch(url, {
+            method: 'GET',
+            headers: defenderHeaders
+          });
+
+          const responseText = await apiResponse.text();
+          try {
+            responseData = responseText ? JSON.parse(responseText) : {};
+          } catch (e) {
+            logger.error(`Failed to parse JSON from Defender response: ${url}`, responseText);
+            responseData = { rawResponse: responseText };
+          }
+
+          if (!apiResponse.ok) {
+            logger.error(`Defender API error for GET ${path}:`, responseData);
+            throw new Error(
+              `Defender API error (${apiResponse.status}) for GET ${path}: ${JSON.stringify(responseData)}`
+            );
+          }
+        }
+      } // end defender branch
 
       // --- Format and Return Result ---
       // For all requests, format as text
@@ -270,7 +369,7 @@ server.tool(
 
       // Add pagination note if applicable (only for single page GET)
       if (!fetchAll && method === 'get') {
-         const nextLinkKey = apiType === 'graph' ? '@odata.nextLink' : 'nextLink';
+         const nextLinkKey = apiType === 'azure' ? 'nextLink' : '@odata.nextLink';
          if (responseData && responseData[nextLinkKey]) { // Added check for responseData existence
              resultText += `\n\nNote: More results are available. To retrieve all pages, add the parameter 'fetchAll: true' to your request.`;
          }
@@ -286,6 +385,8 @@ server.tool(
       if (!determinedUrl) {
          determinedUrl = apiType === 'graph'
            ? `https://graph.microsoft.com/${effectiveGraphApiVersion}`
+           : apiType === 'defender'
+           ? DEFENDER_EU_BASE_URL
            : "https://management.azure.com";
       }
       // Include error body if available from Graph SDK error
