@@ -40,8 +40,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Error Handling
 
-- [ ] **ERRH-01**: 429 rate limit responses are retried with backoff during pagination
-- [ ] **ERRH-02**: Clear error messages for auth failures (wrong scope, missing permissions)
+- [x] **ERRH-01**: 429 rate limit responses are retried with backoff during pagination
+- [x] **ERRH-02**: Clear error messages for auth failures (wrong scope, missing permissions)
 
 ## v2 Requirements
 
@@ -100,8 +100,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILT-07 | Phase 2 | Complete |
 | FILT-08 | Phase 2 | Complete |
 | FILT-09 | Phase 2 | Complete |
-| ERRH-01 | Phase 3 | Pending |
-| ERRH-02 | Phase 3 | Pending |
+| ERRH-01 | Phase 3 | Complete |
+| ERRH-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 21 total
