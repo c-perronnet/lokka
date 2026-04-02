@@ -6,8 +6,14 @@ const getDefaultGraphApiVersion = () => {
 };
 const DEFENDER_EU_BASE_URL = "https://eu.api.security.microsoft.com";
 const DEFENDER_SCOPE = "https://api.securitycenter.microsoft.com/.default";
+const DEFENDER_MAX_RETRIES = 5;
+const DEFENDER_BASE_DELAY_MS = 1e4;
+const DEFENDER_MAX_DELAY_MS = 12e4;
 export {
+  DEFENDER_BASE_DELAY_MS,
   DEFENDER_EU_BASE_URL,
+  DEFENDER_MAX_DELAY_MS,
+  DEFENDER_MAX_RETRIES,
   DEFENDER_SCOPE,
   LokkaClientId,
   LokkaDefaultRedirectUri,

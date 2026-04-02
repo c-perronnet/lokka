@@ -6,7 +6,7 @@ import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
 import fetch from "isomorphic-fetch";
 import { logger } from "./logger.js";
 import { AuthManager, AuthMode } from "./auth.js";
-import { LokkaClientId, LokkaDefaultTenantId, LokkaDefaultRedirectUri, getDefaultGraphApiVersion, DEFENDER_EU_BASE_URL, DEFENDER_SCOPE } from "./constants.js";
+import { LokkaClientId, LokkaDefaultTenantId, LokkaDefaultRedirectUri, getDefaultGraphApiVersion, DEFENDER_EU_BASE_URL, DEFENDER_SCOPE, DEFENDER_MAX_RETRIES, DEFENDER_BASE_DELAY_MS, DEFENDER_MAX_DELAY_MS } from "./constants.js";
 global.fetch = fetch;
 const server = new McpServer({
   name: "Lokka-Microsoft",
@@ -19,6 +19,22 @@ let graphClient = null;
 const useGraphBeta = process.env.USE_GRAPH_BETA !== "false";
 const defaultGraphApiVersion = getDefaultGraphApiVersion();
 logger.info(`Graph API default version: ${defaultGraphApiVersion} (USE_GRAPH_BETA=${process.env.USE_GRAPH_BETA || "undefined"})`);
+function formatDefenderError(status, errorBody) {
+  let parsed;
+  try {
+    parsed = JSON.parse(errorBody);
+  } catch {
+    return `Defender API error (${status}): ${errorBody}`;
+  }
+  const message = parsed?.error?.message;
+  if (status === 401) {
+    return `Defender authentication failed (401 Unauthorized). Likely causes: expired token, or wrong token scope. Ensure the token uses scope 'https://api.securitycenter.microsoft.com/.default' (NOT 'https://api.security.microsoft.com/.default'). API message: ${message || errorBody}`;
+  }
+  if (status === 403) {
+    return `Defender authorization failed (403 Forbidden). Likely causes: missing WindowsDefenderATP app permission (Machine.Read.All or Machine.ReadWrite.All), or admin consent not granted. Check: Azure Portal > App registrations > API permissions > WindowsDefenderATP. API message: ${message || errorBody}`;
+  }
+  return `Defender API error (${status}): ${message || errorBody}`;
+}
 server.tool(
   "Lokka-Microsoft",
   `A versatile tool to interact with Microsoft APIs including Microsoft Graph (Entra), Azure Resource Management, and Microsoft Defender for Endpoint (read-only device queries). For Defender: use apiType 'defender', path '/api/machines' to list devices, '/api/machines/{id}' for a specific device. Supports OData $filter on healthStatus, riskScore, exposureLevel, osPlatform, onboardingStatus, lastSeen, machineTags, lastIpAddress, computerDnsName. Filter examples: healthStatus eq 'Active', riskScore eq 'High', lastSeen gt 2024-01-01T00:00:00Z, startswith(computerDnsName,'prefix'), machineTags/any(tag: tag eq 'value'). Combine filters with 'and'/'or'. Use $top/$skip for pagination or fetchAll:true for all pages. Defender only supports GET requests. IMPORTANT: For Graph API GET requests using advanced query parameters ($filter, $count, $search, $orderby), you are ADVISED to set 'consistencyLevel: "eventual"'.`,
@@ -208,7 +224,7 @@ server.tool(
         const tokenResponse = await azureCredential.getToken(DEFENDER_SCOPE);
         if (!tokenResponse?.token) {
           throw new Error(
-            "Failed to acquire Defender access token. Verify the app registration has WindowsDefenderATP permissions with admin consent."
+            "Failed to acquire Defender access token. Verify: (1) App registration has WindowsDefenderATP > Machine.Read.All or Machine.ReadWrite.All permission, (2) Admin consent is granted, (3) Token scope is 'https://api.securitycenter.microsoft.com/.default'. Note: The scope hostname differs from the API hostname."
           );
         }
         determinedUrl = DEFENDER_EU_BASE_URL;
@@ -225,6 +241,7 @@ server.tool(
           logger.info(`Fetching all Defender pages starting from: ${url}`);
           let allValues = [];
           let currentUrl = url;
+          let retryCount = 0;
           while (currentUrl) {
             logger.info(`Fetching Defender page: ${currentUrl}`);
             const pageCredential = authManager.getAzureCredential();
@@ -239,17 +256,42 @@ server.tool(
                 "Authorization": `Bearer ${pageToken.token}`
               }
             });
+            if (pageResponse.status === 429) {
+              if (retryCount >= DEFENDER_MAX_RETRIES) {
+                throw new Error(
+                  `Defender API rate limit exceeded after ${DEFENDER_MAX_RETRIES} retries on ${currentUrl}. Try reducing the result set with $filter or $top.`
+                );
+              }
+              const retryAfter = pageResponse.headers.get("Retry-After");
+              const delayMs = retryAfter ? parseInt(retryAfter, 10) * 1e3 : Math.min(DEFENDER_BASE_DELAY_MS * Math.pow(2, retryCount), DEFENDER_MAX_DELAY_MS);
+              logger.info(`Rate limited (429). Retry ${retryCount + 1}/${DEFENDER_MAX_RETRIES} after ${delayMs}ms`);
+              await new Promise((resolve) => setTimeout(resolve, delayMs));
+              retryCount++;
+              continue;
+            }
             if (!pageResponse.ok) {
               const errorBody = await pageResponse.text();
-              throw new Error(
-                `Defender API error (${pageResponse.status}) during pagination on ${currentUrl}: ${errorBody}`
-              );
+              throw new Error(formatDefenderError(pageResponse.status, errorBody));
             }
+            retryCount = 0;
             const pageData = await pageResponse.json();
             if (pageData.value && Array.isArray(pageData.value)) {
               allValues = allValues.concat(pageData.value);
             }
             currentUrl = pageData["@odata.nextLink"] || null;
+            if (currentUrl) {
+              try {
+                const nextUrl = new URL(currentUrl);
+                const euHost = new URL(DEFENDER_EU_BASE_URL).hostname;
+                if (nextUrl.hostname !== euHost) {
+                  logger.info(`Rewriting nextLink hostname: ${nextUrl.hostname} -> ${euHost}`);
+                  nextUrl.hostname = euHost;
+                  currentUrl = nextUrl.toString();
+                }
+              } catch (e) {
+                logger.info(`Warning: Could not parse nextLink URL, following as-is: ${currentUrl}`);
+              }
+            }
           }
           responseData = { value: allValues };
           logger.info(`Finished fetching all Defender pages. Total items: ${allValues.length}`);
@@ -268,9 +310,7 @@ server.tool(
           }
           if (!apiResponse.ok) {
             logger.error(`Defender API error for GET ${path}:`, responseData);
-            throw new Error(
-              `Defender API error (${apiResponse.status}) for GET ${path}: ${JSON.stringify(responseData)}`
-            );
+            throw new Error(formatDefenderError(apiResponse.status, JSON.stringify(responseData)));
           }
         }
       }

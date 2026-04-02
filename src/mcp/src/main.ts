@@ -341,6 +341,7 @@ server.tool(
           logger.info(`Fetching all Defender pages starting from: ${url}`);
           let allValues: any[] = [];
           let currentUrl: string | null = url;
+          let retryCount = 0;
 
           while (currentUrl) {
             logger.info(`Fetching Defender page: ${currentUrl}`);
@@ -359,12 +360,32 @@ server.tool(
               }
             });
 
+            // Handle 429 rate limiting with retry
+            if (pageResponse.status === 429) {
+              if (retryCount >= DEFENDER_MAX_RETRIES) {
+                throw new Error(
+                  `Defender API rate limit exceeded after ${DEFENDER_MAX_RETRIES} retries on ${currentUrl}. ` +
+                  `Try reducing the result set with $filter or $top.`
+                );
+              }
+              const retryAfter = pageResponse.headers.get('Retry-After');
+              const delayMs = retryAfter
+                ? parseInt(retryAfter, 10) * 1000
+                : Math.min(DEFENDER_BASE_DELAY_MS * Math.pow(2, retryCount), DEFENDER_MAX_DELAY_MS);
+              logger.info(`Rate limited (429). Retry ${retryCount + 1}/${DEFENDER_MAX_RETRIES} after ${delayMs}ms`);
+              await new Promise(resolve => setTimeout(resolve, delayMs));
+              retryCount++;
+              continue;
+            }
+
+            // Handle other errors with descriptive messages
             if (!pageResponse.ok) {
               const errorBody = await pageResponse.text();
-              throw new Error(
-                `Defender API error (${pageResponse.status}) during pagination on ${currentUrl}: ${errorBody}`
-              );
+              throw new Error(formatDefenderError(pageResponse.status, errorBody));
             }
+
+            // Success -- reset retry counter
+            retryCount = 0;
 
             const pageData = await pageResponse.json();
 
@@ -374,6 +395,21 @@ server.tool(
 
             // CRITICAL: Defender uses @odata.nextLink (NOT bare nextLink like Azure RM)
             currentUrl = pageData['@odata.nextLink'] || null;
+
+            // EU hostname enforcement on nextLink
+            if (currentUrl) {
+              try {
+                const nextUrl = new URL(currentUrl);
+                const euHost = new URL(DEFENDER_EU_BASE_URL).hostname;
+                if (nextUrl.hostname !== euHost) {
+                  logger.info(`Rewriting nextLink hostname: ${nextUrl.hostname} -> ${euHost}`);
+                  nextUrl.hostname = euHost;
+                  currentUrl = nextUrl.toString();
+                }
+              } catch (e) {
+                logger.info(`Warning: Could not parse nextLink URL, following as-is: ${currentUrl}`);
+              }
+            }
           }
 
           responseData = { value: allValues };
@@ -395,9 +431,7 @@ server.tool(
 
           if (!apiResponse.ok) {
             logger.error(`Defender API error for GET ${path}:`, responseData);
-            throw new Error(
-              `Defender API error (${apiResponse.status}) for GET ${path}: ${JSON.stringify(responseData)}`
-            );
+            throw new Error(formatDefenderError(apiResponse.status, JSON.stringify(responseData)));
           }
         }
       } // end defender branch
