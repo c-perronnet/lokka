@@ -9,34 +9,34 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Integration
 
-- [ ] **INTG-01**: User can query Defender for Endpoint API via the existing `Lokka-Microsoft` tool with `apiType: "defender"`
+- [x] **INTG-01**: User can query Defender for Endpoint API via the existing `Lokka-Microsoft` tool with `apiType: "defender"`
 - [x] **INTG-02**: Defender requests use the EU endpoint (`eu.api.security.microsoft.com`) hardcoded
 - [x] **INTG-03**: Defender requests reuse existing Lokka authentication (same credential chain as Graph/Azure RM)
 - [x] **INTG-04**: Defender token uses correct scope (`https://api.securitycenter.microsoft.com/.default`)
-- [ ] **INTG-05**: Only GET (read-only) operations are supported; non-GET methods return a clear error
+- [x] **INTG-05**: Only GET (read-only) operations are supported; non-GET methods return a clear error
 
 ### Device Listing
 
-- [ ] **DEVL-01**: User can list all machines with pagination support (`$top`, `$skip`)
-- [ ] **DEVL-02**: User can fetch all machines across pages using `fetchAll: true`
-- [ ] **DEVL-03**: Pagination follows `@odata.nextLink` correctly (not bare `nextLink`)
+- [x] **DEVL-01**: User can list all machines with pagination support (`$top`, `$skip`)
+- [x] **DEVL-02**: User can fetch all machines across pages using `fetchAll: true`
+- [x] **DEVL-03**: Pagination follows `@odata.nextLink` correctly (not bare `nextLink`)
 
 ### Device Lookup
 
-- [ ] **DEVK-01**: User can get a specific machine by its Defender ID via path `/api/machines/{id}`
-- [ ] **DEVK-02**: User can search machines by DNS name prefix using OData `startswith(computerDnsName,'prefix')`
+- [x] **DEVK-01**: User can get a specific machine by its Defender ID via path `/api/machines/{id}`
+- [x] **DEVK-02**: User can search machines by DNS name prefix using OData `startswith(computerDnsName,'prefix')`
 
 ### Filtering
 
-- [ ] **FILT-01**: User can filter machines by `healthStatus` (Active, Inactive, ImpairedCommunication, NoSensorData, etc.)
-- [ ] **FILT-02**: User can filter machines by `riskScore` (None, Informational, Low, Medium, High)
-- [ ] **FILT-03**: User can filter machines by `exposureLevel` (None, Low, Medium, High)
-- [ ] **FILT-04**: User can filter machines by `osPlatform` (Windows10, Linux, etc.)
-- [ ] **FILT-05**: User can filter machines by `onboardingStatus` (onboarded, CanBeOnboarded, etc.)
-- [ ] **FILT-06**: User can filter machines by `lastSeen` date range (gt, ge, lt, le operators)
-- [ ] **FILT-07**: User can filter machines by `machineTags` using OData lambda syntax
-- [ ] **FILT-08**: User can filter machines by `lastIpAddress` (exact match)
-- [ ] **FILT-09**: User can combine multiple filters using OData `and`/`or` operators
+- [x] **FILT-01**: User can filter machines by `healthStatus` (Active, Inactive, ImpairedCommunication, NoSensorData, etc.)
+- [x] **FILT-02**: User can filter machines by `riskScore` (None, Informational, Low, Medium, High)
+- [x] **FILT-03**: User can filter machines by `exposureLevel` (None, Low, Medium, High)
+- [x] **FILT-04**: User can filter machines by `osPlatform` (Windows10, Linux, etc.)
+- [x] **FILT-05**: User can filter machines by `onboardingStatus` (onboarded, CanBeOnboarded, etc.)
+- [x] **FILT-06**: User can filter machines by `lastSeen` date range (gt, ge, lt, le operators)
+- [x] **FILT-07**: User can filter machines by `machineTags` using OData lambda syntax
+- [x] **FILT-08**: User can filter machines by `lastIpAddress` (exact match)
+- [x] **FILT-09**: User can combine multiple filters using OData `and`/`or` operators
 
 ### Error Handling
 
@@ -81,25 +81,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INTG-01 | Phase 2 | Pending |
+| INTG-01 | Phase 2 | Complete |
 | INTG-02 | Phase 1 | Complete |
 | INTG-03 | Phase 1 | Complete |
 | INTG-04 | Phase 1 | Complete |
-| INTG-05 | Phase 2 | Pending |
-| DEVL-01 | Phase 2 | Pending |
-| DEVL-02 | Phase 2 | Pending |
-| DEVL-03 | Phase 2 | Pending |
-| DEVK-01 | Phase 2 | Pending |
-| DEVK-02 | Phase 2 | Pending |
-| FILT-01 | Phase 2 | Pending |
-| FILT-02 | Phase 2 | Pending |
-| FILT-03 | Phase 2 | Pending |
-| FILT-04 | Phase 2 | Pending |
-| FILT-05 | Phase 2 | Pending |
-| FILT-06 | Phase 2 | Pending |
-| FILT-07 | Phase 2 | Pending |
-| FILT-08 | Phase 2 | Pending |
-| FILT-09 | Phase 2 | Pending |
+| INTG-05 | Phase 2 | Complete |
+| DEVL-01 | Phase 2 | Complete |
+| DEVL-02 | Phase 2 | Complete |
+| DEVL-03 | Phase 2 | Complete |
+| DEVK-01 | Phase 2 | Complete |
+| DEVK-02 | Phase 2 | Complete |
+| FILT-01 | Phase 2 | Complete |
+| FILT-02 | Phase 2 | Complete |
+| FILT-03 | Phase 2 | Complete |
+| FILT-04 | Phase 2 | Complete |
+| FILT-05 | Phase 2 | Complete |
+| FILT-06 | Phase 2 | Complete |
+| FILT-07 | Phase 2 | Complete |
+| FILT-08 | Phase 2 | Complete |
+| FILT-09 | Phase 2 | Complete |
 | ERRH-01 | Phase 3 | Pending |
 | ERRH-02 | Phase 3 | Pending |
 
