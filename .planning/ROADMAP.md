@@ -13,7 +13,7 @@ This milestone adds Microsoft Defender for Endpoint device querying to the exist
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Auth Prerequisites** - Verify token scope and app registration before any code is written
-- [ ] **Phase 2: Core Defender Integration** - Extend Lokka-Microsoft tool with full Defender device query support
+- [x] **Phase 2: Core Defender Integration** - Extend Lokka-Microsoft tool with full Defender device query support
 - [ ] **Phase 3: Pagination Hardening** - Harden EU hostname normalization, 429 retry, and surface clear error messages
 
 ## Phase Details
@@ -44,7 +44,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md — Extend Lokka-Microsoft with Defender handler (constants, schema, handler branch, pagination)
+- [x] 02-01-PLAN.md — Extend Lokka-Microsoft with Defender handler (constants, schema, handler branch, pagination)
 
 ### Phase 3: Pagination Hardening
 **Goal**: Large-tenant pagination is reliable under rate limits and EU data residency is enforced even when `@odata.nextLink` returns a global hostname
@@ -54,7 +54,10 @@ Plans:
   1. A simulated 429 response during `fetchAll` pagination triggers retry with exponential backoff and eventually succeeds without user intervention
   2. `@odata.nextLink` URLs containing `api.security.microsoft.com` are rewritten to `eu.api.security.microsoft.com` before being followed
   3. Auth failures (wrong scope, missing permissions) surface a message that identifies the likely cause rather than a raw HTTP error code
-**Plans**: TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 03-01-PLAN.md — Add 429 retry/backoff, EU hostname rewriting, and auth error formatting
 
 ## Progress
 
@@ -64,5 +67,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Auth Prerequisites | 1/1 | Complete | 2026-04-01 |
-| 2. Core Defender Integration | 0/1 | Not started | - |
-| 3. Pagination Hardening | 0/? | Not started | - |
+| 2. Core Defender Integration | 1/1 | Complete | 2026-04-02 |
+| 3. Pagination Hardening | 0/1 | Not started | - |
