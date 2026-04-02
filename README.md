@@ -1,6 +1,5 @@
 # Lokka
 
-[![npm version](https://badge.fury.io/js/@merill%2Flokka.svg)](https://badge.fury.io/js/@merill%2Flokka)
 
 Lokka is a model-context-protocol server for the Microsoft Graph, Azure RM, and Microsoft Defender for Endpoint APIs that allows you to query and manage your Azure and Microsoft 365 tenants with AI.
 
@@ -93,7 +92,7 @@ For user-based authentication with interactive login. This is the simplest confi
   "mcpServers": {
     "Lokka-Microsoft": {
       "command": "npx",
-      "args": ["-y", "@merill/lokka"]
+      "args": ["-y", "github:c-perronnet/lokka"]
     }
   }
 }
@@ -108,7 +107,7 @@ If you wish to use a custom Microsoft Entra app:
   "mcpServers": {
     "Lokka-Microsoft": {
       "command": "npx",
-      "args": ["-y", "@merill/lokka"],
+      "args": ["-y", "github:c-perronnet/lokka"],
       "env": {
         "TENANT_ID": "<tenant-id>",
         "CLIENT_ID": "<client-id>",
@@ -132,7 +131,7 @@ App only authentication using a PEM-encoded client certificate:
   "mcpServers": {
     "Lokka-Microsoft": {
       "command": "npx",
-      "args": ["-y", "@merill/lokka"],
+      "args": ["-y", "github:c-perronnet/lokka"],
       "env": {
         "TENANT_ID": "<tenant-id>",
         "CLIENT_ID": "<client-id>",
@@ -158,7 +157,7 @@ openssl pkcs12 -in /path/to/cert.pfx -out /path/to/cert.pem -nodes -clcerts
   "mcpServers": {
     "Lokka-Microsoft": {
       "command": "npx",
-      "args": ["-y", "@merill/lokka"],
+      "args": ["-y", "github:c-perronnet/lokka"],
       "env": {
         "TENANT_ID": "<tenant-id>",
         "CLIENT_ID": "<client-id>",
@@ -178,7 +177,7 @@ Token-based authentication where the MCP Client provides access tokens:
   "mcpServers": {
     "Lokka-Microsoft": {
       "command": "npx",
-      "args": ["-y", "@merill/lokka"],
+      "args": ["-y", "github:c-perronnet/lokka"],
       "env": {
         "USE_CLIENT_TOKEN": "true"
       }
@@ -288,8 +287,8 @@ See the docs for more information on how to install and configure Lokka.
 
   | Platform | VS Code | VS Code Insiders |
   | - | - | - |
-  | Windows | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Lokka_for_Windows-0098FF?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22cmd%22%2C%22args%22%3A%5B%22%2Fc%22%2C%22npx%22%2C%22-y%22%2C%22%40merill%2Flokka%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Lokka_for_Windows-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode-insiders:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22cmd%22%2C%22args%22%3A%5B%22%2Fc%22%2C%22npx%22%2C%22-y%22%2C%22%40merill%2Flokka%22%5D%7D) |
-  | macOS/Linux | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Lokka_for_macOS_%26_Linux-0098FF?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40merill%2Flokka%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Lokka_for_macOS_%26_Linux-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode-insiders:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40merill%2Flokka%22%5D%7D) |
+  | Windows | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Lokka_for_Windows-0098FF?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22cmd%22%2C%22args%22%3A%5B%22%2Fc%22%2C%22npx%22%2C%22-y%22%2C%22github%3Ac-perronnet%2Flokka%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Lokka_for_Windows-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode-insiders:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22cmd%22%2C%22args%22%3A%5B%22%2Fc%22%2C%22npx%22%2C%22-y%22%2C%22github%3Ac-perronnet%2Flokka%22%5D%7D) |
+  | macOS/Linux | [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Lokka_for_macOS_%26_Linux-0098FF?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22github%3Ac-perronnet%2Flokka%22%5D%7D) | [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Lokka_for_macOS_%26_Linux-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=ffffff)](vscode-insiders:mcp/install?%7B%22name%22%3A%22Lokka-Microsoft%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22github%3Ac-perronnet%2Flokka%22%5D%7D) |
 
 ## Contributors
 
