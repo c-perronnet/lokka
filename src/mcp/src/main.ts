@@ -6,7 +6,7 @@ import { Client, PageIterator, PageCollection } from "@microsoft/microsoft-graph
 import fetch from 'isomorphic-fetch'; // Required polyfill for Graph client
 import { logger } from "./logger.js";
 import { AuthManager, AuthConfig, AuthMode } from "./auth.js";
-import { LokkaClientId, LokkaDefaultTenantId, LokkaDefaultRedirectUri, getDefaultGraphApiVersion, DEFENDER_EU_BASE_URL, DEFENDER_SCOPE } from "./constants.js";
+import { LokkaClientId, LokkaDefaultTenantId, LokkaDefaultRedirectUri, getDefaultGraphApiVersion, DEFENDER_EU_BASE_URL, DEFENDER_SCOPE, DEFENDER_MAX_RETRIES, DEFENDER_BASE_DELAY_MS, DEFENDER_MAX_DELAY_MS } from "./constants.js";
 
 // Set up global fetch for the Microsoft Graph client
 (global as any).fetch = fetch;
@@ -28,6 +28,43 @@ const useGraphBeta = process.env.USE_GRAPH_BETA !== 'false'; // Default to true 
 const defaultGraphApiVersion = getDefaultGraphApiVersion();
 
 logger.info(`Graph API default version: ${defaultGraphApiVersion} (USE_GRAPH_BETA=${process.env.USE_GRAPH_BETA || 'undefined'})`);
+
+/**
+ * Translates Defender API error responses into actionable messages.
+ * Handles 401 (auth), 403 (permissions), and generic error codes.
+ */
+function formatDefenderError(status: number, errorBody: string): string {
+  let parsed: any;
+  try {
+    parsed = JSON.parse(errorBody);
+  } catch {
+    return `Defender API error (${status}): ${errorBody}`;
+  }
+
+  const message = parsed?.error?.message;
+
+  if (status === 401) {
+    return (
+      `Defender authentication failed (401 Unauthorized). ` +
+      `Likely causes: expired token, or wrong token scope. ` +
+      `Ensure the token uses scope 'https://api.securitycenter.microsoft.com/.default' ` +
+      `(NOT 'https://api.security.microsoft.com/.default'). ` +
+      `API message: ${message || errorBody}`
+    );
+  }
+
+  if (status === 403) {
+    return (
+      `Defender authorization failed (403 Forbidden). ` +
+      `Likely causes: missing WindowsDefenderATP app permission (Machine.Read.All or Machine.ReadWrite.All), ` +
+      `or admin consent not granted. ` +
+      `Check: Azure Portal > App registrations > API permissions > WindowsDefenderATP. ` +
+      `API message: ${message || errorBody}`
+    );
+  }
+
+  return `Defender API error (${status}): ${message || errorBody}`;
+}
 
 server.tool(
   "Lokka-Microsoft",
@@ -281,7 +318,10 @@ server.tool(
         if (!tokenResponse?.token) {
           throw new Error(
             "Failed to acquire Defender access token. " +
-            "Verify the app registration has WindowsDefenderATP permissions with admin consent."
+            "Verify: (1) App registration has WindowsDefenderATP > Machine.Read.All or Machine.ReadWrite.All permission, " +
+            "(2) Admin consent is granted, " +
+            "(3) Token scope is 'https://api.securitycenter.microsoft.com/.default'. " +
+            "Note: The scope hostname differs from the API hostname."
           );
         }
         determinedUrl = DEFENDER_EU_BASE_URL;

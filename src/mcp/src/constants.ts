@@ -12,3 +12,6 @@ export const getDefaultGraphApiVersion = (): "v1.0" | "beta" => {
 // Microsoft Defender for Endpoint constants
 export const DEFENDER_EU_BASE_URL = "https://eu.api.security.microsoft.com";
 export const DEFENDER_SCOPE = "https://api.securitycenter.microsoft.com/.default";
+export const DEFENDER_MAX_RETRIES = 5;
+export const DEFENDER_BASE_DELAY_MS = 10_000; // 10 seconds
+export const DEFENDER_MAX_DELAY_MS = 120_000; // 2 minutes cap
