@@ -4,7 +4,7 @@
 
 Lokka is a model-context-protocol server for the Microsoft Graph, Azure RM, and Microsoft Defender for Endpoint APIs that allows you to query and manage your Azure and Microsoft 365 tenants with AI.
 
-<img src="https://github.com/merill/lokka/blob/main/assets/lokka-demo-1.gif?raw=true" alt="Lokka Demo - user create demo" width="500"/>
+<img src="https://github.com/c-perronnet/lokka/blob/main/assets/lokka-demo-1.gif?raw=true" alt="Lokka Demo - user create demo" width="500"/>
 
 Please see [Lokka.dev](https://lokka.dev) for how to use Lokka with your favorite AI model and chat client.
 
@@ -20,7 +20,7 @@ e.g.:
 - `Show me all Windows 10 devices that haven't been seen in the last 30 days`
 - `Get the health status of machine DESKTOP-ABC123`
 
-![How does Lokka work?](https://github.com/merill/lokka/blob/main/website/docs/assets/how-does-lokka-mcp-server-work.png?raw=true)
+![How does Lokka work?](https://github.com/c-perronnet/lokka/blob/main/website/docs/assets/how-does-lokka-mcp-server-work.png?raw=true)
 
 ## Supported APIs
 
